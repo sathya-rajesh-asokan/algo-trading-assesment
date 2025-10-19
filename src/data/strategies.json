@@ -1,0 +1,142 @@
+{
+  "Sample Strategy": {
+    "buy_rules": [
+      {
+        "indicator": "close",
+        "operator": ">",
+        "compare": {
+          "type": "indicator",
+          "value": "close"
+        },
+        "note": ""
+      }
+    ],
+    "sell_rules": []
+  },
+  "Ideal Strategy": {
+    "buy_rules": [
+      {
+        "indicator": "SMA20",
+        "operator": ">",
+        "compare": {
+          "type": "indicator",
+          "value": "SMA50"
+        },
+        "note": "confirms the short-term uptrend taking control."
+      },
+      {
+        "indicator": "RSI14",
+        "operator": "<=",
+        "compare": {
+          "type": "number",
+          "value": 60.0
+        },
+        "note": "enters only when momentum isn\u2019t already overheated, leaving room for upside."
+      }
+    ],
+    "sell_rules": [
+      {
+        "indicator": "SMA20",
+        "operator": "<",
+        "compare": {
+          "type": "indicator",
+          "value": "SMA50"
+        },
+        "note": "signals the short-term trend has rolled over."
+      },
+      {
+        "indicator": "RSI14",
+        "operator": ">=",
+        "compare": {
+          "type": "number",
+          "value": 70.0
+        },
+        "note": "take profits when the move pushes into overbought territory."
+      }
+    ]
+  },
+  "Momentum Confirmation": {
+    "buy_rules": [
+      {
+        "indicator": "SMA20",
+        "operator": ">",
+        "compare": {
+          "type": "indicator",
+          "value": "SMA50"
+        },
+        "note": "Only trade in the direction of the medium-term uptrend."
+      },
+      {
+        "indicator": "MACD",
+        "operator": ">",
+        "compare": {
+          "type": "indicator",
+          "value": "MACD_signal"
+        },
+        "note": "Confirm momentum acceleration before entry."
+      }
+    ],
+    "sell_rules": [
+      {
+        "indicator": "MACD",
+        "operator": "<",
+        "compare": {
+          "type": "indicator",
+          "value": "MACD_signal"
+        },
+        "note": "Exit when momentum rolls over."
+      },
+      {
+        "indicator": "SMA20",
+        "operator": "<",
+        "compare": {
+          "type": "indicator",
+          "value": "SMA50"
+        },
+        "note": "Protect against full trend reversal."
+      }
+    ]
+  },
+  "RSI Pullback": {
+    "buy_rules": [
+      {
+        "indicator": "SMA20",
+        "operator": ">",
+        "compare": {
+          "type": "indicator",
+          "value": "SMA50"
+        },
+        "note": "Ensure the dominant trend remains bullish."
+      },
+      {
+        "indicator": "RSI14",
+        "operator": "<=",
+        "compare": {
+          "type": "number",
+          "value": 40.0
+        },
+        "note": "Buy the dip while RSI signals a pullback within the uptrend."
+      }
+    ],
+    "sell_rules": [
+      {
+        "indicator": "RSI14",
+        "operator": ">=",
+        "compare": {
+          "type": "number",
+          "value": 65.0
+        },
+        "note": "Take profits when momentum re-stretches to the upside."
+      },
+      {
+        "indicator": "SMA20",
+        "operator": "<",
+        "compare": {
+          "type": "indicator",
+          "value": "SMA50"
+        },
+        "note": "Exit on trend breakdown."
+      }
+    ]
+  }
+}

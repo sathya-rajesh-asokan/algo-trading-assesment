@@ -1,0 +1,44 @@
+{
+  "name": "RSI Pullback",
+  "description": "Buy pullbacks within an uptrend when RSI resets to neutral levels and exit as momentum stretches higher again.",
+  "buy_rules": [
+    {
+      "indicator": "SMA20",
+      "operator": ">",
+      "compare": {
+        "type": "indicator",
+        "value": "SMA50"
+      },
+      "note": "Ensure price remains in a broader uptrend."
+    },
+    {
+      "indicator": "RSI14",
+      "operator": "<=",
+      "compare": {
+        "type": "number",
+        "value": 40.0
+      },
+      "note": "Enter on oversold pullbacks within the uptrend."
+    }
+  ],
+  "sell_rules": [
+    {
+      "indicator": "RSI14",
+      "operator": ">=",
+      "compare": {
+        "type": "number",
+        "value": 65.0
+      },
+      "note": "Take profit when RSI stretches back to upper neutral."
+    },
+    {
+      "indicator": "SMA20",
+      "operator": "<",
+      "compare": {
+        "type": "indicator",
+        "value": "SMA50"
+      },
+      "note": "Exit on confirmed trend breakdown."
+    }
+  ]
+}

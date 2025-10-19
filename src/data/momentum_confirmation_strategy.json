@@ -1,0 +1,44 @@
+{
+  "name": "Momentum Confirmation",
+  "description": "Trade in the direction of the prevailing uptrend once MACD confirms bullish momentum.",
+  "buy_rules": [
+    {
+      "indicator": "SMA20",
+      "operator": ">",
+      "compare": {
+        "type": "indicator",
+        "value": "SMA50"
+      },
+      "note": "Only participate when the 20-day moving average is above the 50-day average."
+    },
+    {
+      "indicator": "MACD",
+      "operator": ">",
+      "compare": {
+        "type": "indicator",
+        "value": "MACD_signal"
+      },
+      "note": "Require positive MACD momentum crossover."
+    }
+  ],
+  "sell_rules": [
+    {
+      "indicator": "MACD",
+      "operator": "<",
+      "compare": {
+        "type": "indicator",
+        "value": "MACD_signal"
+      },
+      "note": "Exit when momentum turns down."
+    },
+    {
+      "indicator": "SMA20",
+      "operator": "<",
+      "compare": {
+        "type": "indicator",
+        "value": "SMA50"
+      },
+      "note": "Close the trade on a trend reversal."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" version="28.2.7">
+  <diagram name="Page-1" id="lRSFXd8YU7HLxHgrqMfG">
+    <mxGraphModel dx="1018" dy="570" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="io4kEsc9pC5EbVqQhg09-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-10" target="H49_dyliAyGJbprF3cr1-7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="392" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-10" value="UI Elements" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=center;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="152" y="40" width="230" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-7" target="H49_dyliAyGJbprF3cr1-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-7" value="Backend Server Components" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="400" y="40" width="720" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-2" value="Trader / Analyst" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="72" y="200" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-3" value="Analysis Dashboard" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="192" y="80" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-4" value="Strategy Testing" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="192" y="200" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-5" value="Live trade status" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="192" y="320" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-6" value="Broker Client" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="920" y="200" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-8" value="" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png" parent="1" vertex="1">
+          <mxGeometry x="720" y="480" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-9" value="Datastore" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="720" y="560" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-11" target="H49_dyliAyGJbprF3cr1-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="70" />
+              <mxPoint x="1080" y="70" />
+              <mxPoint x="1080" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-11" value="Data Retrieval Engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="80" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-12" target="H49_dyliAyGJbprF3cr1-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-12" value="Strategy Testing Engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="200" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-13" target="H49_dyliAyGJbprF3cr1-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-13" value="Buy and Sell Engine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="920" y="80" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-14" target="H49_dyliAyGJbprF3cr1-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-14" value="Scheduler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="920" y="315" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-15" value="Portfolio Risk Rebalancing engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="690" y="80" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-19" target="H49_dyliAyGJbprF3cr1-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="H49_dyliAyGJbprF3cr1-19" target="H49_dyliAyGJbprF3cr1-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H49_dyliAyGJbprF3cr1-19" value="Strategy Execution Engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="690" y="210" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="io4kEsc9pC5EbVqQhg09-2" value="Cached Data and Trade execution data" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="810" y="505" width="150" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,5 @@
+{
+  "hreturn": ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "LLY", "COST", "TMO", "ADBE", "INTC"],
+  "hdividend": ["JNJ", "PG", "KO", "PEP", "CVX", "XOM", "PFE", "IBM", "MCD"],
+  "hgold": ["GLD"]
+}
