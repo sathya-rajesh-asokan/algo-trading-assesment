@@ -35,6 +35,7 @@ CATEGORY_LABELS = {
     "hdividend": "High Dividend / Income",
     "hgold": "Gold Hedge ETF",
 }
+FRONTIER_SAMPLE_SIZE = 5000
 
 st.set_page_config(page_title="Strategy Backtesting", layout="wide")
 
@@ -79,6 +80,55 @@ def _calculate_volatility(equity: pd.Series) -> float:
     if returns.empty:
         return float("nan")
     return returns.std() * np.sqrt(252)
+
+
+def _generate_frontier_allocations(
+    category_equity: pd.DataFrame,
+    samples: int = FRONTIER_SAMPLE_SIZE,
+    risk_free_rate: float = 0.0,
+):
+    if category_equity.empty:
+        return None
+
+    pivot = category_equity.pivot(index="date", columns="category", values="equity").dropna()
+    returns = pivot.pct_change().dropna()
+    if returns.empty or returns.shape[1] < 2:
+        return None
+
+    mean_returns = returns.mean() * 252
+    cov_matrix = returns.cov() * 252
+    categories = mean_returns.index.tolist()
+
+    rng = np.random.default_rng(42)
+    weights = rng.dirichlet(np.ones(len(categories)), size=samples)
+
+    port_returns = weights @ mean_returns.to_numpy()
+    cov_values = cov_matrix.to_numpy()
+    port_volatility = np.sqrt(np.sum((weights @ cov_values) * weights, axis=1))
+
+    sharpe_denominator = np.where(port_volatility == 0, np.nan, port_volatility)
+    sharpe_ratios = (port_returns - risk_free_rate) / sharpe_denominator
+
+    if np.all(np.isnan(sharpe_ratios)):
+        return None
+
+    best_idx = int(np.nanargmax(sharpe_ratios))
+    min_vol_idx = int(np.nanargmin(port_volatility))
+
+    frontier = pd.DataFrame(
+        {
+            "annual_return": port_returns,
+            "annual_volatility": port_volatility,
+            "sharpe": sharpe_ratios,
+        }
+    )
+    for column, category in enumerate(categories):
+        frontier[category] = weights[:, column]
+
+    best_weights = dict(zip(categories, weights[best_idx]))
+    min_vol_weights = dict(zip(categories, weights[min_vol_idx]))
+
+    return frontier, best_weights, min_vol_weights
 
 def _load_strategies() -> Dict[str, Dict]:
     if STRATEGY_FILE.exists():
@@ -452,6 +502,55 @@ with col_chart:
         title=f"Equity Curves — Strategy: {strategy_name}",
     )
     st.plotly_chart(equity_chart, use_container_width=True)
+
+frontier_payload = _generate_frontier_allocations(category_equity)
+if frontier_payload is not None:
+    frontier_df, best_weights, min_vol_weights = frontier_payload
+    st.subheader("Efficient Frontier Allocation (Simulated)")
+
+    buckets = sorted(set(best_weights) | set(min_vol_weights))
+    weight_table = pd.DataFrame(
+        [
+            {
+                "Bucket": CATEGORY_LABELS.get(bucket, bucket),
+                "Max Sharpe Weight": f"{best_weights.get(bucket, 0.0) * 100:.2f}%",
+                "Min Volatility Weight": f"{min_vol_weights.get(bucket, 0.0) * 100:.2f}%",
+            }
+            for bucket in buckets
+        ]
+    )
+    st.dataframe(weight_table, use_container_width=True, hide_index=True)
+
+    scatter = px.scatter(
+        frontier_df,
+        x="annual_volatility",
+        y="annual_return",
+        color="sharpe",
+        labels={
+            "annual_volatility": "Annualized Volatility",
+            "annual_return": "Annualized Return",
+            "sharpe": "Sharpe Ratio",
+        },
+        title="Simulated Frontier (Random Portfolios)",
+        color_continuous_scale="Viridis",
+    )
+    best_point = frontier_df.loc[frontier_df["sharpe"].idxmax()]
+    min_vol_point = frontier_df.loc[frontier_df["annual_volatility"].idxmin()]
+    scatter.add_scatter(
+        x=[best_point["annual_volatility"]],
+        y=[best_point["annual_return"]],
+        mode="markers",
+        marker=dict(color="red", size=10, symbol="star"),
+        name="Max Sharpe",
+    )
+    scatter.add_scatter(
+        x=[min_vol_point["annual_volatility"]],
+        y=[min_vol_point["annual_return"]],
+        mode="markers",
+        marker=dict(color="orange", size=10, symbol="star"),
+        name="Min Volatility",
+    )
+    st.plotly_chart(scatter, use_container_width=True)
 
 st.subheader("Per-Ticker Results")
 rows = []

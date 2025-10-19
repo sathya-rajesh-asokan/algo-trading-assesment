@@ -2,7 +2,7 @@
 Trade simulation page.
 
 Simulates live trading over the configured trade simulation window,
-applying management fees, periodic rebalancing, and strategy rules.
+applying management fees, trading rules, and frontier-based allocation guidance.
 """
 
 import json
@@ -36,6 +36,7 @@ ALLOCATION_MAP = {
 BASE_GOLD_TARGET = 0.10
 GOLD_TICKER = "GLD"
 MANAGEMENT_FEE_ANNUAL = 0.01
+FRONTIER_SAMPLE_SIZE = 5000
 
 CATEGORY_LABELS = {
     "hreturn": "High Return / Growth",
@@ -59,7 +60,7 @@ st.set_page_config(page_title="Trade Simulation", layout="wide")
 
 st.title("Trade Simulation")
 st.caption(
-    "Simulate live trading over the trade simulation window with fees and early-month rebalancing."
+    "Simulate live trading over the trade simulation window with fees and frontier-driven allocation suggestions."
 )
 
 
@@ -171,6 +172,55 @@ def _calculate_volatility(equity: pd.Series) -> float:
     return returns.std() * np.sqrt(252)
 
 
+def _generate_frontier_allocations(
+    category_equity: pd.DataFrame,
+    samples: int = FRONTIER_SAMPLE_SIZE,
+    risk_free_rate: float = 0.0,
+):
+    if category_equity.empty:
+        return None
+
+    pivot = category_equity.pivot(index="date", columns="category", values="equity").dropna()
+    returns = pivot.pct_change().dropna()
+    if returns.empty or returns.shape[1] < 2:
+        return None
+
+    mean_returns = returns.mean() * 252
+    cov_matrix = returns.cov() * 252
+    categories = mean_returns.index.tolist()
+
+    rng = np.random.default_rng(123)
+    weights = rng.dirichlet(np.ones(len(categories)), size=samples)
+
+    port_returns = weights @ mean_returns.to_numpy()
+    cov_values = cov_matrix.to_numpy()
+    port_volatility = np.sqrt(np.sum((weights @ cov_values) * weights, axis=1))
+
+    denom = np.where(port_volatility == 0, np.nan, port_volatility)
+    sharpe_ratios = (port_returns - risk_free_rate) / denom
+
+    if np.all(np.isnan(sharpe_ratios)):
+        return None
+
+    best_idx = int(np.nanargmax(sharpe_ratios))
+    min_vol_idx = int(np.nanargmin(port_volatility))
+
+    frontier = pd.DataFrame(
+        {
+            "annual_return": port_returns,
+            "annual_volatility": port_volatility,
+            "sharpe": sharpe_ratios,
+        }
+    )
+    for column, category in enumerate(categories):
+        frontier[category] = weights[:, column]
+
+    best_weights = dict(zip(categories, weights[best_idx]))
+    min_vol_weights = dict(zip(categories, weights[min_vol_idx]))
+
+    return frontier, best_weights, min_vol_weights
+
+
 def _resolve_rule(rule: Dict, df: pd.DataFrame) -> Tuple[pd.Series, pd.Series]:
     lhs = df[rule["indicator"]]
     compare = rule.get("compare", {})
@@ -221,17 +271,11 @@ def _apply_management_fee(equity_curve: pd.Series) -> pd.Series:
     return equity_curve * factor
 
 
-def _build_rebalance_signal(dates: pd.Series) -> pd.Series:
-    month_group = dates.dt.to_period("M")
-    return dates.groupby(month_group).apply(lambda grp: (grp.index - grp.index.min()) < 3)
-
-
 def _simulate_equity_bucket(
     df: pd.DataFrame,
     buy_rules: Iterable[Dict],
     sell_rules: Iterable[Dict],
     capital: float,
-    rebalance_signal: pd.Series,
 ) -> Tuple[pd.DataFrame, int]:
     df = df.sort_values("date").reset_index(drop=True)
     df = _compute_indicators(df)
@@ -239,7 +283,6 @@ def _simulate_equity_bucket(
 
     df["buy_signal"] = _build_signal(df, buy_rules)
     df["sell_signal"] = _build_signal(df, sell_rules)
-    df["rebalance"] = rebalance_signal.reindex(df.index, fill_value=False)
 
     cash = capital
     shares = 0.0
@@ -251,10 +294,6 @@ def _simulate_equity_bucket(
         if pd.isna(price) or price <= 0:
             equity.append(cash + shares * price if not pd.isna(price) else cash)
             continue
-
-        if row["rebalance"] and shares > 0:
-            cash += shares * price
-            shares = 0.0
 
         if shares == 0 and row["buy_signal"]:
             purchasable = np.floor(cash / price)
@@ -329,13 +368,11 @@ for category in ("hreturn", "hdividend", "hgold"):
             st.warning(f"No price data for {ticker} within the simulation window. Skipping.")
             continue
 
-        rebalance_signal = _build_rebalance_signal(price_df["date"]).reindex(price_df.index, fill_value=False)
         equity_curve, trades = _simulate_equity_bucket(
             price_df,
             buy_rules=buy_rules,
             sell_rules=sell_rules,
             capital=per_ticker_capital,
-            rebalance_signal=rebalance_signal,
         )
 
         starting_capital = per_ticker_capital + cash_reserve
@@ -453,6 +490,71 @@ with col_chart:
         title=f"Simulated Equity Curves — Strategy: {strategy_name}",
     )
     st.plotly_chart(equity_chart, use_container_width=True)
+
+frontier_payload = _generate_frontier_allocations(bucket_equity)
+if frontier_payload is not None:
+    frontier_df, best_weights, min_vol_weights = frontier_payload
+    st.subheader("Efficient Frontier Allocation (Simulated)")
+
+    buckets = sorted(set(best_weights) | set(min_vol_weights))
+    weight_table = pd.DataFrame(
+        [
+            {
+                "Bucket": bucket,
+                "Max Sharpe Weight": f"{best_weights.get(bucket, 0.0) * 100:.2f}%",
+                "Min Volatility Weight": f"{min_vol_weights.get(bucket, 0.0) * 100:.2f}%",
+            }
+            for bucket in buckets
+        ]
+    )
+    st.dataframe(weight_table, use_container_width=True, hide_index=True)
+
+    pivot_equity = (
+        bucket_equity.pivot(index="date", columns="category", values="equity").dropna().sort_index()
+    )
+    best_vector = np.array([best_weights.get(col, 0.0) for col in pivot_equity.columns])
+    optimized_values = pivot_equity.values @ best_vector
+    optimized_curve = pd.DataFrame({"date": pivot_equity.index, "optimized_equity": optimized_values})
+    overlay = portfolio_equity.merge(optimized_curve, on="date", how="inner")
+    overlay_chart = px.line(
+        overlay,
+        x="date",
+        y=["total_equity", "optimized_equity"],
+        labels={"value": "Equity", "date": "Date", "variable": "Curve"},
+        title="Current vs Max-Sharpe Allocation",
+    )
+    st.plotly_chart(overlay_chart, use_container_width=True)
+
+    scatter = px.scatter(
+        frontier_df,
+        x="annual_volatility",
+        y="annual_return",
+        color="sharpe",
+        labels={
+            "annual_volatility": "Annualized Volatility",
+            "annual_return": "Annualized Return",
+            "sharpe": "Sharpe Ratio",
+        },
+        title="Simulated Frontier (Random Portfolios)",
+        color_continuous_scale="Viridis",
+    )
+    best_point = frontier_df.loc[frontier_df["sharpe"].idxmax()]
+    min_vol_point = frontier_df.loc[frontier_df["annual_volatility"].idxmin()]
+    scatter.add_scatter(
+        x=[best_point["annual_volatility"]],
+        y=[best_point["annual_return"]],
+        mode="markers",
+        marker=dict(color="red", size=10, symbol="star"),
+        name="Max Sharpe",
+    )
+    scatter.add_scatter(
+        x=[min_vol_point["annual_volatility"]],
+        y=[min_vol_point["annual_return"]],
+        mode="markers",
+        marker=dict(color="orange", size=10, symbol="star"),
+        name="Min Volatility",
+    )
+    st.plotly_chart(scatter, use_container_width=True)
 
 st.subheader("Per-Ticker Performance")
 rows = []
